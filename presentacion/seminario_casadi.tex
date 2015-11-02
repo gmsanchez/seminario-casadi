@@ -1,0 +1,304 @@
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+\documentclass{beamer}
+
+\usepackage[spanish]{babel}
+\selectlanguage{spanish}
+\usepackage[utf8]{inputenc}
+
+% There are many different themes available for Beamer. A comprehensive
+% list with examples is given here:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+% You can uncomment the themes below if you would like to use a different
+% one:
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{boxes}
+%\usetheme{CambridgeUS}
+\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{default}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+%\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+\title{Optimización con Python}
+
+% A subtitle is optional and this may be deleted
+\subtitle{Una introducción a CasADi}
+
+\author{Guido ~Sanchez}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[sinc(i)] % (optional, but mostly needed)
+{
+  Centro de Investigación en Señales, Sistemas e Inteligencia Computacional \\
+  Universidad Nacional del Litoral
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date{Seminarios del sinc(i), 2015}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Optimización con Python}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%\AtBeginSubsection[]
+%{
+%  \begin{frame}<beamer>{Outline}
+%    \tableofcontents[currentsection,currentsubsection]
+%  \end{frame}
+%}
+
+% Let's get started
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+
+\section{Introducción}
+
+\subsection{¿Qué es CasADi?}
+
+\begin{frame}{¿Qué es CasADi?}{}
+  \begin{itemize}
+  \item Es un framework open-source (LGPL) utilizado para la diferenciación algorítmica, la optimización numérica y control óptimo.
+  \item Utiliza la sintaxis de los sistemas de álgebra (CAS) y permite construir expresiones simbólicas que pueden ser diferenciadas automáticamente de forma eficiente.
+  \item Actualmente, es una herramienta general para optimización numérica basada en métodos de gradiente, con un fuerte enfoque hacia el control óptimo.
+  \item Desarrollado por Joel Andersson y Joris Gillis en el Optimization in Engineering Center (OPTEC) de KU Leuven bajo supervisión de Moritz Diehl.
+  \end{itemize}
+\end{frame}
+
+\subsection{¿Qué no es CasADi?}
+
+\begin{frame}{¿Qué \textit{no} es CasADi?}
+  \begin{itemize}
+  \item No es un sistema de diferenciación algorítmica convencional que permita calcular derivadas a partir de código existente sin demasiadas modificaciones. Se debe reimplementar utilizando la sintaxis de CasADi.
+  \item No es un sistema de álgebra. A pesar de que CasADi manipula expresiones simbólicas, sus capacidades son limitadas a comparación de una herramienta CAS.
+  \item No es un solver de problemas de control óptimo, sino que trata de proveer con los bloques que permitan al usuario construir su solver.
+  \end{itemize}
+\end{frame}
+
+\subsection{Componentes principales}
+
+\begin{frame}{Componentes principales}
+    \begin{itemize}
+    \item Un CAS minimalista (como el Symbolic Toolbox de Matlab).
+    \item Los algoritmos de diferenciación soportan:
+        \begin{itemize}
+            \item Modo hacia adelante (forward) y hacia atras (adjoint).
+            \item Simbólico y numérico.
+            \item Dos maneras de representar expresiones.
+        \end{itemize}
+    \item Interfaces a Ipopt, Sundials, (KNITRO, OOQP, qpOASES, CPLEX,
+LAPACK, CSparse, ACADO Toolkit ...
+    \item Front-ends para C++, Python, Octave y Matlab.
+    \item Importa modelos de JModelica.org
+    \end{itemize}
+\end{frame}
+
+\section{Manos a la obra}
+
+\subsection{El framework simbólico}
+
+\begin{frame}{Tipos de datos fundamentales}
+    \begin{itemize}
+    \item SX – tipo simbólico escalar.
+    \item SXMatrix y DMatrix – matrices sparse.
+    \item FX y clases derivadas – funciones de CasADi.
+    \item MX – tipo simbólico matricial.
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Integración de ODE/DAE}
+
+\begin{frame}{Integración de ODE/DAE}
+    \begin{itemize}
+    \item Suite de integradores open-source Sundials (ODE: CVodes / DAE: IDAS).
+    \item Utilización: \texttt{integrator = casadi.Integrator(ode function)}.
+    \item Casadi se encarga de armar las ecuaciones necesarias.
+    \end{itemize}
+\end{frame}
+
+\subsection{Optimización}
+
+\begin{frame}{Optimización}
+\begin{equation}
+\begin{array}{cl}
+\underset{x \in \mathbb{R}^N}{\text{minimizar}}  & \displaystyle f(x) \\\\
+\text{sujeto a}
+& x_{min} \leq x \leq x_{max}   \\\\
+& g_{min} \leq g(x) \leq g_{max}
+\end{array}
+\end{equation}
+
+\begin{itemize}
+\item Restricciones de igualdad ($x_{min} = x_{max}$) para algunos $x$.
+\item Se formula utilizando solvers NLP (por ejemplo, IPOPT).
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Repaso I}
+Sólo restricciones de igualdad
+
+\begin{equation}
+\begin{array}{cl}
+\underset{x \in \mathbb{R}^N}{\text{minimizar}}  & \displaystyle f(x) \\
+\text{sujeto a}
+& g(x) = 0
+\end{array}
+\end{equation}
+
+Para una solución óptima $x^*$ existen multiplicadores $\lambda^*$ tal que:
+
+\begin{equation}
+\begin{array}{rl}
+ \nabla_x \mathcal{L}(x^*, \lambda^*) =& 0  \\
+ g(x^*) =& 0 
+\end{array}
+\end{equation}
+
+$\nabla_x \mathcal{L}(x,\lambda) = f(x) - \lambda^T g(x)$ es el Lagrangiano 
+
+\end{frame}
+
+\begin{frame}{Repaso II}
+
+Con restricciones de igualdad y desigualdad
+
+\begin{equation}
+\begin{array}{cl}
+\underset{x \in \mathbb{R}^N}{\text{minimizar}}  & \displaystyle f(x) \\
+\text{sujeto a}
+& g(x) = 0, h(x) \geq 0
+\end{array}
+\end{equation}
+
+Condiciones de Karush-Kuhn-Tucker (KKT): Para una solución óptima $x^*$ existen multiplicadores $\lambda^*$, $\mu^*$ tal que:
+
+\begin{equation}
+\begin{array}{rl}
+ \nabla_x \mathcal{L}(x^*, \lambda^*, \mu^*) =& 0  \\
+ g(x^*) =& 0 \\
+ h(x^*) \geq & 0 \\
+ \mu^* \geq & 0 \\
+ h(x^*)^T \mu^* =& 0
+\end{array}
+\end{equation}
+
+$\nabla_x \mathcal{L}(x,\lambda,\mu) = f(x) - \lambda^T g(x) - \mu^T h(x)$ es el Lagrangiano 
+
+\end{frame}
+
+\begin{frame}{IPOPT}
+    \begin{itemize}
+    \item Optimizador open-source de punto interior: IPOPT\footnote{www.coin-or.org/Ipopt}.
+    \item Resuelve NLP grandes (millones de variables/restricciones).
+    \item Para resolver el sistema lineal se usa MA27, MA57, Mumps, Paradiso, ...
+    \item Calcula $\frac{\partial g}{\partial x}$, $\nabla_x \mathcal{L}$ y $\nabla_x^2 \mathcal{L}$ utilizando algoritmos eficientes.
+    \item Penaliza las desigualdades utilizando una funcion de barrera $\tau log(h(x))$,
+        \begin{equation}
+        \begin{array}{cl}
+        \underset{x \in \mathbb{R}^N}{\text{minimizar}}  & \displaystyle f(x) - \tau log(h(x)) \\
+        \text{sujeto a} & g(x) = 0
+        \end{array}
+        \end{equation}
+    \end{itemize}
+\end{frame}
+
+\subsection{Ejemplo de NLP}
+
+\begin{frame}{Notebook de iPython}
+\begin{itemize}
+\item ¡Manos a la obra!
+\end{itemize}
+\end{frame}
+
+\section*{Conclusiones}
+
+\begin{frame}{Conclusiones}
+  \begin{itemize}
+  \item Permite formular problemas de optimización de forma simple.
+  \item El framework simbólico permite plantear el algoritmo con formulaciones ``de libro''.
+  \item Los solver utilizados necesitan muy poco tiempo para resolver problemas de optimización no lineales.
+  \end{itemize}
+\end{frame}
+
+\section*{Preguntas}
+
+\begin{frame}{}
+    \begin{center}
+    ¿Preguntas?
+    \end{center}
+\end{frame}
+
+% All of the following is optional and typically not needed. 
+\appendix
+\section<presentation>*{\appendixname}
+\subsection<presentation>*{Más información}
+
+\begin{frame}{Más información}
+
+    \begin{itemize}
+    \item http://www.casadi.org/
+    \item https://github.com/casadi/casadi
+    \item http://casadi.sourceforge.net/users\_guide/html/casadi-users\_guide.html
+    \item Alternativa: CVXOPT - http://cvxopt.org/
+    \end{itemize}
+
+\end{frame}
+
+\end{document}
+
+
